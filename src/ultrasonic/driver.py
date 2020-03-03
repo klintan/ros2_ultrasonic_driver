@@ -20,7 +20,8 @@ class UltrasonicDriver(Node):
         self.max_range = self.declare_parameter('max_range', 1.0).value
 
         # We need to have one frame_id per sensor
-        self.frame_id = self.declare_parameter('frame_id', 'ultrasonic').value
+        # TODO loop through arbitrary defined sensors
+        # self.frame_id_a = self.declare_parameter('sensor_a_fid', 'ultrasonic_sensor_a').value
 
         try:
             self.range_serial_reader = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=2)
@@ -42,7 +43,7 @@ class UltrasonicDriver(Node):
             parts = data.split(" ")
             if len(parts) != 2:
                 self.get_logger().warning("Could not parse sensor data")
-                return {}
+                return
 
             distance = float(parts[1])
             # from cm to m
@@ -51,7 +52,8 @@ class UltrasonicDriver(Node):
             id_regex = r'A|B|C|D|E|F|G|H'
             sensor_id = re.findall(id_regex, parts[0])[0]
 
-        return sensor_id, distance
+            return sensor_id, distance
+        return
 
     def to_msg(self, sensor_id, distance):
 
@@ -60,7 +62,8 @@ class UltrasonicDriver(Node):
         msg.header = Header()
         msg.header.stamp = self.get_clock().now().to_msg
 
-        msg.header.frame_id = self.frame_id
+        # need to define transforms for all sensors
+        msg.header.frame_id = f"ultrasonic_sensor_{sensor_id}"
         msg.radiation_type = 0
 
         msg.min_range = self.min_range
@@ -80,6 +83,7 @@ def main(args=None):
     driver.destroy_node()
 
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
