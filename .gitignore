@@ -1,0 +1,11 @@
+install
+build
+log
+dist
+
+.idea
+
+**.egg-info
+.pytest_cache
+
+**.pyc
