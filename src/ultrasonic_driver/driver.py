@@ -78,7 +78,7 @@ class UltrasonicDriver(Node):
 
         msg.radiation_type = 0
 
-        msg.field_of_view = 0
+        msg.field_of_view = 0.0
         msg.min_range = self.min_range
         msg.max_range = self.max_range
         msg.range = distance
