@@ -39,7 +39,6 @@ class UltrasonicDriver(Node):
                 continue
 
             msg = self.to_msg(sensor_id, distance)
-            self.get_logger().info(f"{msg.range}")
             self.range_pub.publish(msg)
 
     def read_data(self):
