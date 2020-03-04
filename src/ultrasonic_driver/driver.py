@@ -1,6 +1,7 @@
 import re
-import serial
+import sys
 
+import serial
 import rclpy
 
 from rclpy.node import Node
@@ -10,10 +11,10 @@ from std_msgs.msg import Header
 
 class UltrasonicDriver(Node):
     def __init__(self):
-        super().__init__('ros2_ultrasonic_driver')
+        super().__init__('ultrasonic_driver')
         self.range_pub = self.create_publisher(Range, 'ultrasonic_range', 10)
 
-        self.port = self.declare_parameter('port', '/dev/ttyUSB0').value
+        self.port = self.declare_parameter('port', '/dev/tty.usbmodem141301').value
         self.baudrate = self.declare_parameter('baud', 115200).value
 
         self.min_range = self.declare_parameter('min_range', 0.10).value
@@ -26,24 +27,34 @@ class UltrasonicDriver(Node):
         try:
             self.range_serial_reader = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=2)
         except serial.SerialException as e:
-            self.get_logger().fatal("Serial communication failed", e)
+            self.get_logger().fatal(f"Serial communication failed {e}")
+            sys.exit()
 
         while rclpy.ok():
             data = self.read_data()
-            sensor_id, distance = self.parse_data(data)
+            try:
+                sensor_id, distance = UltrasonicDriver.parse_data(data)
+            except Exception as e:
+                self.get_logger().warning(f"Data parsing failed for data: {data}, Error: {e}")
+                continue
+
             msg = self.to_msg(sensor_id, distance)
+            self.get_logger().info(f"{msg.range}")
             self.range_pub.publish(msg)
 
     def read_data(self):
-        return self.range_serial_reader.readline().strip()
+        data = self.range_serial_reader.readline().strip()
+        if isinstance(data, bytes):
+            data = data.decode("utf-8")
+        return data
 
-    def parse_data(self, data):
-
+    @staticmethod
+    def parse_data(data):
         if data:
             parts = data.split(" ")
             if len(parts) != 2:
-                self.get_logger().warning("Could not parse sensor data")
-                return
+                # self.get_logger().warning("Could not parse sensor data")
+                raise Exception("Incorrect data format")
 
             distance = float(parts[1])
             # from cm to m
@@ -53,22 +64,23 @@ class UltrasonicDriver(Node):
             sensor_id = re.findall(id_regex, parts[0])[0]
 
             return sensor_id, distance
-        return
+
+        raise Exception("Data empty")
 
     def to_msg(self, sensor_id, distance):
 
         msg = Range()
-
         msg.header = Header()
-        msg.header.stamp = self.get_clock().now().to_msg
 
+        msg.header.stamp = self.get_clock().now().to_msg()
         # need to define transforms for all sensors
         msg.header.frame_id = f"ultrasonic_sensor_{sensor_id}"
+
         msg.radiation_type = 0
 
+        msg.field_of_view = 0
         msg.min_range = self.min_range
         msg.max_range = self.max_range
-
         msg.range = distance
 
         return msg

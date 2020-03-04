@@ -1,19 +1,21 @@
 import os
 from glob import glob
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
-PACKAGE_NAME = 'ros2_ultrasonic_driver'
+PACKAGE_NAME = 'ultrasonic_driver'
 SHARE_DIR = os.path.join("share", PACKAGE_NAME)
 
 setup(
     name=PACKAGE_NAME,
     version='0.0.1',
-    packages=["ultrasonic"],
+    packages=[PACKAGE_NAME],
     package_dir={'': 'src', },
     data_files=[
         (os.path.join(SHARE_DIR, "launch"), glob(os.path.join("launch", "*.launch.py"))),
-        (os.path.join(SHARE_DIR, "config"), glob(os.path.join("config", "*.yaml")))],
+        (os.path.join(SHARE_DIR, "config"), glob(os.path.join("config", "*.yaml"))),
+        ('share/' + PACKAGE_NAME, ['package.xml']),
+    ],
     install_requires=['setuptools',
                       'pyserial'
                       ],
@@ -23,7 +25,7 @@ setup(
     license='MIT',
     entry_points={
         'console_scripts': [
-            'ultrasonic_driver = ultrasonic.driver:main',
+            'ultrasonic_driver = ultrasonic_driver.driver:main',
         ],
     },
 )
