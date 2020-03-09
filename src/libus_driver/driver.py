@@ -20,10 +20,6 @@ class UltrasonicDriver(Node):
         self.min_range = self.declare_parameter('min_range', 0.10).value
         self.max_range = self.declare_parameter('max_range', 1.0).value
 
-        # We need to have one frame_id per sensor
-        # TODO loop through arbitrary defined sensors
-        # self.frame_id_a = self.declare_parameter('sensor_a_fid', 'ultrasonic_sensor_a').value
-
         try:
             self.range_serial_reader = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=2)
         except serial.SerialException as e:
