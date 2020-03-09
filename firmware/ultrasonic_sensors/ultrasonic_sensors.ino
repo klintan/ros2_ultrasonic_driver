@@ -83,22 +83,16 @@ void loop()
       break;
     /*case senF:
       Serial.print("SensorF: ");
-      Serial.print (temp, BIN);
-      Serial.print(" ");
       pulse_distance(i + 1);
       i = i + 16;
       break;
       case senG:
       Serial.print("SensorG: ");
-      Serial.print (temp, BIN);
-      Serial.print(" ");
       pulse_distance(i + 1);
       i = i + 16;
       break;*/
     case senH:
       Serial.print("SensorH: ");
-      //Serial.print (sensorId, BIN);
-      Serial.print(" ");
       print_distance(distance);
       break;
   }

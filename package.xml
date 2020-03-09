@@ -7,16 +7,16 @@
         ROS2 ultrasonic sensors parking kit driver.
     </description>
 
-    <maintainer>Andreas Klintberg</maintainer>
+    <maintainer email="andreas.klintberg@gmail.com">Andreas Klintberg</maintainer>
 
     <license>MIT</license>
 
     <author email="andreas.klintberg@gmail.com">Andreas Klintberg</author>
 
-    <depend>rclpy</depend>
-    <depend>python-serial</depend>
-    <depend>geometry_msgs</depend>
-    <depend>sensor_msgs</depend>
+    <exec_depend>rclpy</exec_depend>
+    <exec_depend>python-serial</exec_depend>
+    <exec_depend>geometry_msgs</exec_depend>
+    <exec_depend>sensor_msgs</exec_depend>
 
     <test_depend>python3-pytest</test_depend>
 
